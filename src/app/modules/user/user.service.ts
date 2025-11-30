@@ -2,7 +2,7 @@ import httpStatus from 'http-status-codes';
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
 import bcryptjs from "bcryptjs";
-import AppError from '../../../errorHelpers/appError';
+import AppError from '../../errorHelpers/appError';
 
 
 const createUserService = async (payload: Partial<IUser>) => {
