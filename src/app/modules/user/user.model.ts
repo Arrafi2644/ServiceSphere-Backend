@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { IAuthProvider, IGig, IProviderProfile, IsActive, IUser, Role } from "./user.interface";
+import { IAuthProvider, IGig, IProviderProfile, IsActive, IUser, Role, VerificationStatus } from "./user.interface";
 
 const authProviderSchema = new Schema<IAuthProvider>({
     provider: {type: String, required: true},
@@ -72,9 +72,9 @@ const providerProfileSchema = new Schema<IProviderProfile>(
     },
 
     verificationStatus: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending"
+        type: String,
+        enum: Object.values(VerificationStatus),
+        default: VerificationStatus.PENDING
     },
 
     rating: { type: Number, default: 0 },

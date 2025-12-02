@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post('/register', UserControllers.createUser)
 router.post("/provider-request", checkAuth(Role.USER), UserControllers.createProviderRequest)
+router.patch("/provider-request/:id", checkAuth(Role.ADMIN), UserControllers.updateProviderRequestStatus)
 
 export const userRoutes = router;
 

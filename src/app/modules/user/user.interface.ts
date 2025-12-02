@@ -41,6 +41,12 @@ export interface IGig {
     isActive: boolean;
 }
 
+export enum VerificationStatus {
+    APPROVED = "APPROVED",
+    PENDING = "PENDING",
+    REJECTED = "REJECTED"
+}
+
 export interface IProviderProfile {
     _id?: Types.ObjectId;
     userId: Types.ObjectId;
@@ -52,7 +58,7 @@ export interface IProviderProfile {
         nidBack: string;
         certificate?: string;
     };
-    verificationStatus: "pending" | "approved" | "rejected";
+    verificationStatus: VerificationStatus;
     rating: number;
     completedOrders: number;
     gigs: IGig[];

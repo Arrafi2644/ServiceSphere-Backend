@@ -1,8 +1,9 @@
 import httpStatus from 'http-status-codes';
-import { IProviderProfile, IUser } from "./user.interface";
+import { IProviderProfile, IUser, Role, VerificationStatus } from "./user.interface";
 import { ProviderProfile, User } from "./user.model";
 import bcryptjs from "bcryptjs";
 import AppError from '../../errorHelpers/appError';
+import mongoose from 'mongoose';
 
 
 const createUserService = async (payload: Partial<IUser>) => {
@@ -27,13 +28,10 @@ const createUserService = async (payload: Partial<IUser>) => {
 
 const createProviderRequestService = async (payload: Partial<IProviderProfile>) => {
     const { userId } = payload;
-    console.log("userId form decoded token ", userId);
     const isExistUser = await User.findById(userId)
     if (!isExistUser) {
         throw new AppError(httpStatus.NOT_FOUND, "User does not exist");
     }
-
-    console.log({isExistUser});
 
     // Check if the user already has a provider profile
     const existingProfile = await ProviderProfile.findOne({ userId });
@@ -47,8 +45,54 @@ const createProviderRequestService = async (payload: Partial<IProviderProfile>) 
     return providerProfile;
 };
 
+const updateProviderRequestStatusService = async (
+    providerProfileId: string,
+    status: VerificationStatus
+) => {
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        // Find the provider profile
+        const providerProfile = await ProviderProfile.findById(providerProfileId).session(session);
+        if (!providerProfile) {
+            throw new AppError(httpStatus.NOT_FOUND, "Provider request not found");
+        }
+
+        if (providerProfile.verificationStatus === status) {
+            throw new AppError(httpStatus.BAD_REQUEST, `Provider request is already ${status}`);
+        }
+
+        // Update provider profile status
+        providerProfile.verificationStatus = status;
+        await providerProfile.save({ session });
+
+        // If approved, update user role to PROVIDER
+        if (status === VerificationStatus.APPROVED) {
+            const user = await User.findById(providerProfile.userId).session(session);
+            if (!user) {
+                throw new AppError(httpStatus.NOT_FOUND, "Associated user not found");
+            }
+
+            user.role = Role.PROVIDER;
+            await user.save({ session });
+        }
+
+        // Commit the transaction
+        await session.commitTransaction();
+        session.endSession();
+
+        return providerProfile;
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        throw error;
+    }
+};
 
 export const UserServices = {
     createUserService,
-    createProviderRequestService
+    createProviderRequestService,
+    updateProviderRequestStatusService
 }
