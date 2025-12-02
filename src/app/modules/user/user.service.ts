@@ -1,5 +1,5 @@
 import httpStatus from 'http-status-codes';
-import { IProviderProfile, IUser, ProviderStatus, Role } from "./user.interface";
+import { IProvider, IUser, ProviderStatus, Role } from "./user.interface";
 import { ServiceProvider, User } from "./user.model";
 import bcryptjs from "bcryptjs";
 import AppError from '../../errorHelpers/appError';
@@ -57,7 +57,7 @@ const deleteUser = async (id: string) => {
 
 // Provider Request 
 
-const createProviderRequestService = async (payload: Partial<IProviderProfile>) => {
+const createProviderRequestService = async (payload: Partial<IProvider>) => {
     const { userId } = payload;
     const isExistUser = await User.findById(userId)
     if (!isExistUser) {
@@ -91,12 +91,12 @@ const updateProviderRequestStatusService = async (
             throw new AppError(httpStatus.NOT_FOUND, "Provider request not found");
         }
 
-        if (providerProfile.verificationStatus === status) {
+        if (providerProfile.status === status) {
             throw new AppError(httpStatus.BAD_REQUEST, `Provider request is already ${status}`);
         }
 
         // Update provider profile status
-        providerProfile.verificationStatus = status;
+        providerProfile.status = status;
         await providerProfile.save({ session });
 
         // If approved, update user role to PROVIDER
@@ -107,6 +107,28 @@ const updateProviderRequestStatusService = async (
             }
 
             user.role = Role.PROVIDER;
+            await user.save({ session });
+        }
+
+           // If reject, update user role to USER
+        if (status === ProviderStatus.REJECTED) {
+            const user = await User.findById(providerProfile.userId).session(session);
+            if (!user) {
+                throw new AppError(httpStatus.NOT_FOUND, "Associated user not found");
+            }
+
+            user.role = Role.USER;
+            await user.save({ session });
+        }
+
+             // If pending, update user role to USER
+        if (status === ProviderStatus.REJECTED) {
+            const user = await User.findById(providerProfile.userId).session(session);
+            if (!user) {
+                throw new AppError(httpStatus.NOT_FOUND, "Associated user not found");
+            }
+
+            user.role = Role.USER;
             await user.save({ session });
         }
 

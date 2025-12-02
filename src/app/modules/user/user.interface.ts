@@ -38,7 +38,7 @@ export enum ProviderStatus {
     REJECTED = "REJECTED"
 }
 
-export interface IProviderProfile {
+export interface IProvider {
     _id?: Types.ObjectId;
     userId: Types.ObjectId;
     skills: string[];
@@ -49,7 +49,7 @@ export interface IProviderProfile {
         nidBack: string;
         certificate?: string;
     };
-    verificationStatus: ProviderStatus;
+    status: ProviderStatus;
     rating: number;
     completedOrders: number;
     gigs: [{ type: Types.ObjectId, ref: "Service" }]

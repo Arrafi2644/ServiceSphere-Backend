@@ -63,7 +63,7 @@ export const createProviderRequestZodSchema = z.object({
 });
 
 export const updateProviderRequestStatusZodSchema = z.object({
-    status: z.enum([ProviderStatus.APPROVED, ProviderStatus.REJECTED], {
-        invalid_type_error: "Status must be APPROVED or REJECTED"
+    status: z.enum([ProviderStatus.APPROVED, ProviderStatus.REJECTED, ProviderStatus.PENDING], {
+        invalid_type_error: "Status must be APPROVED, REJECTED, PENDING"
     })
 });

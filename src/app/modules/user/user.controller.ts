@@ -65,13 +65,13 @@ const createProviderRequest = catchAsync(async (req: Request, res: Response) => 
         userId: decodedToken.userId,
         ...req.body
     }
-    const providerProfile = await UserServices.createProviderRequestService(payload);
+    const provider = await UserServices.createProviderRequestService(payload);
 
     sendResponse(res, {
         statusCode: httpStatus.CREATED,
         success: true,
         message: "Provider Request Submitted Successfully",
-        data: providerProfile,
+        data: provider,
     });
 });
 

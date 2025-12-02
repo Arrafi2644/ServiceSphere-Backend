@@ -1,5 +1,5 @@
 import { model, Schema, Types } from "mongoose";
-import { IAuthProvider, IProviderProfile, IsActive, IUser, ProviderStatus, Role } from "./user.interface";
+import { IAuthProvider, IProvider, IsActive, IUser, ProviderStatus, Role } from "./user.interface";
 
 const authProviderSchema = new Schema<IAuthProvider>({
     provider: {type: String, required: true},
@@ -37,7 +37,7 @@ const userSchema = new Schema<IUser>({
 
 export const User = model<IUser>("User", userSchema)
 
-const providerProfileSchema = new Schema<IProviderProfile>(
+const providerProfileSchema = new Schema<IProvider>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
 
@@ -56,7 +56,7 @@ const providerProfileSchema = new Schema<IProviderProfile>(
       certificate: { type: String }
     },
 
-    verificationStatus: {
+    status: {
         type: String,
         enum: Object.values(ProviderStatus),
         default: ProviderStatus.PENDING
@@ -79,7 +79,7 @@ const providerProfileSchema = new Schema<IProviderProfile>(
   }
 );
 
-export const ServiceProvider = model<IProviderProfile>(
+export const ServiceProvider = model<IProvider>(
   "ServiceProvider",
   providerProfileSchema
 );
