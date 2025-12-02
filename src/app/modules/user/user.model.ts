@@ -1,5 +1,5 @@
-import { model, Schema } from "mongoose";
-import { IAuthProvider, IGig, IProviderProfile, IsActive, IUser, Role, VerificationStatus } from "./user.interface";
+import { model, Schema, Types } from "mongoose";
+import { IAuthProvider, IProviderProfile, IsActive, IUser, ProviderStatus, Role } from "./user.interface";
 
 const authProviderSchema = new Schema<IAuthProvider>({
     provider: {type: String, required: true},
@@ -37,21 +37,6 @@ const userSchema = new Schema<IUser>({
 
 export const User = model<IUser>("User", userSchema)
 
-export const gigSchema = new Schema<IGig>(
-  {
-    title: { type: String, required: true },
-    description: { type: String, required: true },
-    price: { type: Number, required: true },
-    image: { type: String, required: true },
-    category: { type: String, required: true },
-    isActive: { type: Boolean, default: true }
-  },
-  {
-    versionKey: false,
-    _id: false 
-  }
-);
-
 const providerProfileSchema = new Schema<IProviderProfile>(
   {
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -73,18 +58,20 @@ const providerProfileSchema = new Schema<IProviderProfile>(
 
     verificationStatus: {
         type: String,
-        enum: Object.values(VerificationStatus),
-        default: VerificationStatus.PENDING
+        enum: Object.values(ProviderStatus),
+        default: ProviderStatus.PENDING
     },
 
     rating: { type: Number, default: 0 },
 
     completedOrders: { type: Number, default: 0 },
 
-    gigs: {
-      type: [gigSchema],
-      default: []
-    }
+    gigs: [
+      {
+        type: Types.ObjectId,
+        ref: "Service"
+      }
+    ]
   },
   {
     timestamps: true,
@@ -92,7 +79,7 @@ const providerProfileSchema = new Schema<IProviderProfile>(
   }
 );
 
-export const ProviderProfile = model<IProviderProfile>(
-  "ProviderProfile",
+export const ServiceProvider = model<IProviderProfile>(
+  "ServiceProvider",
   providerProfileSchema
 );

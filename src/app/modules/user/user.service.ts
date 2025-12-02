@@ -1,6 +1,6 @@
 import httpStatus from 'http-status-codes';
-import { IProviderProfile, IUser, Role, VerificationStatus } from "./user.interface";
-import { ProviderProfile, User } from "./user.model";
+import { IProviderProfile, IUser, ProviderStatus, Role } from "./user.interface";
+import { ServiceProvider, User } from "./user.model";
 import bcryptjs from "bcryptjs";
 import AppError from '../../errorHelpers/appError';
 import mongoose from 'mongoose';
@@ -65,20 +65,20 @@ const createProviderRequestService = async (payload: Partial<IProviderProfile>) 
     }
 
     // Check if the user already has a provider profile
-    const existingProfile = await ProviderProfile.findOne({ userId });
+    const existingProfile = await ServiceProvider.findOne({ userId });
     if (existingProfile) {
         throw new AppError(httpStatus.CONFLICT, "Provider request already submitted for this user");
     }
 
     // Create the provider profile
-    const providerProfile = await ProviderProfile.create(payload);
+    const providerProfile = await ServiceProvider.create(payload);
 
     return providerProfile;
 };
 
 const updateProviderRequestStatusService = async (
     providerProfileId: string,
-    status: VerificationStatus
+    status: ProviderStatus
 ) => {
 
     const session = await mongoose.startSession();
@@ -86,7 +86,7 @@ const updateProviderRequestStatusService = async (
 
     try {
         // Find the provider profile
-        const providerProfile = await ProviderProfile.findById(providerProfileId).session(session);
+        const providerProfile = await ServiceProvider.findById(providerProfileId).session(session);
         if (!providerProfile) {
             throw new AppError(httpStatus.NOT_FOUND, "Provider request not found");
         }
@@ -100,7 +100,7 @@ const updateProviderRequestStatusService = async (
         await providerProfile.save({ session });
 
         // If approved, update user role to PROVIDER
-        if (status === VerificationStatus.APPROVED) {
+        if (status === ProviderStatus.APPROVED) {
             const user = await User.findById(providerProfile.userId).session(session);
             if (!user) {
                 throw new AppError(httpStatus.NOT_FOUND, "Associated user not found");

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { Role, IsActive } from "./user.interface";
-import { VerificationStatus } from "./user.interface";
+import { ProviderStatus } from "./user.interface";
 
 
 export const createUserZodSchema = z.object({
@@ -63,7 +63,7 @@ export const createProviderRequestZodSchema = z.object({
 });
 
 export const updateProviderRequestStatusZodSchema = z.object({
-    status: z.enum([VerificationStatus.APPROVED, VerificationStatus.REJECTED], {
+    status: z.enum([ProviderStatus.APPROVED, ProviderStatus.REJECTED], {
         invalid_type_error: "Status must be APPROVED or REJECTED"
     })
 });

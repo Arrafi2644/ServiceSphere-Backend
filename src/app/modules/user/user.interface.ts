@@ -32,16 +32,7 @@ export interface IUser {
     auths: IAuthProvider[];
 }
 
-export interface IGig {
-    title: string;
-    description: string;
-    price: number;
-    image: string;
-    category: string;
-    isActive: boolean;
-}
-
-export enum VerificationStatus {
+export enum ProviderStatus {
     APPROVED = "APPROVED",
     PENDING = "PENDING",
     REJECTED = "REJECTED"
@@ -58,10 +49,10 @@ export interface IProviderProfile {
         nidBack: string;
         certificate?: string;
     };
-    verificationStatus: VerificationStatus;
+    verificationStatus: ProviderStatus;
     rating: number;
     completedOrders: number;
-    gigs: IGig[];
+    gigs: [{ type: Types.ObjectId, ref: "Service" }]
     createdAt?: Date;
     updatedAt?: Date;
 }

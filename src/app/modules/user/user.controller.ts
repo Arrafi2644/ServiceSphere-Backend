@@ -5,8 +5,8 @@ import { NextFunction, Request, Response } from "express"
 import { UserServices } from './user.service';
 import { catchAsync } from '../../utils/catchAsync';
 import { sendResponse } from '../../utils/sendResponse';
-import { VerificationStatus } from './user.interface';
 import { JwtPayload } from 'jsonwebtoken';
+import { ProviderStatus } from './user.interface';
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
     const user = await UserServices.createUserService(req.body)
@@ -81,7 +81,7 @@ export const updateProviderRequestStatus = catchAsync(async (req: Request, res: 
 
     const updatedProviderProfile = await UserServices.updateProviderRequestStatusService(
         id,
-        status as VerificationStatus
+        status as ProviderStatus
     );
 
     sendResponse(res, {
