@@ -30,4 +30,32 @@ export interface IUser {
     isVerified: boolean;
     isDeleted?: boolean;
     auths: IAuthProvider[];
-} 
+}
+
+export interface IGig {
+    title: string;
+    description: string;
+    price: number;
+    image: string;
+    category: string;
+    isActive: boolean;
+}
+
+export interface IProviderProfile {
+    _id?: Types.ObjectId;
+    userId: Types.ObjectId;
+    skills: string[];
+    bio: string;
+    experience: number;
+    documents: {
+        nidFront: string;
+        nidBack: string;
+        certificate?: string;
+    };
+    verificationStatus: "pending" | "approved" | "rejected";
+    rating: number;
+    completedOrders: number;
+    gigs: IGig[];
+    createdAt?: Date;
+    updatedAt?: Date;
+}

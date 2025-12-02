@@ -17,6 +17,25 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+const createProviderRequest = catchAsync(async (req: Request, res: Response) => {
+    const decodedToken = req.user;
+
+    console.log({decodedToken});
+    const payload = {
+        userId: decodedToken.userId,
+        ...req.body
+    }
+    const providerProfile = await UserServices.createProviderRequestService(payload);
+
+    sendResponse(res, {
+        statusCode: httpStatus.CREATED,
+        success: true,
+        message: "Provider Request Submitted Successfully",
+        data: providerProfile,
+    });
+});
+
 export const UserControllers = {
-    createUser
+    createUser,
+    createProviderRequest
 }
