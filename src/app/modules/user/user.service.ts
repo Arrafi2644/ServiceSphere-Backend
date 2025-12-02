@@ -5,7 +5,6 @@ import bcryptjs from "bcryptjs";
 import AppError from '../../errorHelpers/appError';
 import mongoose from 'mongoose';
 
-
 const createUserService = async (payload: Partial<IUser>) => {
     const { email, password, ...rest } = payload;
 
@@ -25,6 +24,38 @@ const createUserService = async (payload: Partial<IUser>) => {
     return user;
 
 }
+
+const getMe = async (userId: string) => {
+    const user = await User.findById(userId).select("-password");
+    return {
+        data: user
+    }
+};
+
+const getSingleUser = async (id: string) => {
+    const user = await User.findById(id);
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
+    }
+    return {
+        data: user
+    }
+};
+
+const deleteUser = async (id: string) => {
+    const user = await User.findById(id);
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
+    }
+     
+    await User.findByIdAndDelete(id);
+    
+    return {
+        data: null
+    }
+};
+
+// Provider Request 
 
 const createProviderRequestService = async (payload: Partial<IProviderProfile>) => {
     const { userId } = payload;
@@ -93,6 +124,9 @@ const updateProviderRequestStatusService = async (
 
 export const UserServices = {
     createUserService,
+    getMe,
+    getSingleUser,
+    deleteUser,
     createProviderRequestService,
     updateProviderRequestStatusService
 }
