@@ -39,29 +39,35 @@ export const updateUserZodSchema = z.object({
         .optional(),
 });
 
-
-
 export const createProviderRequestZodSchema = z.object({
-    skills: z.array(z.string({ invalid_type_error: "Skill must be a string" })).min(1, { message: "At least one skill is required" }),
-    bio: z.string({ invalid_type_error: "Bio must be a string" }).min(1, { message: "Bio is required" }),
-    experience: z.number({ invalid_type_error: "Experience must be a number" }).min(0, { message: "Experience must be at least 0" }),
-    documents: z.object({
-        nidFront: z.string({ invalid_type_error: "NID Front must be a string" }).min(1, { message: "NID Front is required" }),
-        nidBack: z.string({ invalid_type_error: "NID Back must be a string" }).min(1, { message: "NID Back is required" }),
-        certificate: z.string({ invalid_type_error: "Certificate must be a string" }).optional()
-    }),
-    gigs: z.array(
-        z.object({
-            title: z.string({ invalid_type_error: "Title must be a string" }).min(1),
-            description: z.string({ invalid_type_error: "Description must be a string" }).min(1),
-            price: z.number({ invalid_type_error: "Price must be a number" }),
-            image: z.string({ invalid_type_error: "Image must be a string" }),
-            category: z.string({ invalid_type_error: "Category must be a string" }),
-            isActive: z.boolean().optional()
-        })
-    ).optional()
-});
+  skills: z
+    .array(
+      z.string({ invalid_type_error: "Skill must be a string" })
+    )
+    .min(1, { message: "At least one skill is required" }),
 
+  bio: z
+    .string({ invalid_type_error: "Bio must be a string" })
+    .min(1, { message: "Bio is required" }),
+
+  experience: z
+    .number({ invalid_type_error: "Experience must be a number" })
+    .min(0, { message: "Experience must be at least 0" }),
+
+  documents: z.object({
+    nidFront: z
+      .string({ invalid_type_error: "NID Front must be a string" })
+      .min(1, { message: "NID Front is required" }),
+
+    nidBack: z
+      .string({ invalid_type_error: "NID Back must be a string" })
+      .min(1, { message: "NID Back is required" }),
+
+    certificate: z
+      .string({ invalid_type_error: "Certificate must be a string" })
+      .optional()
+  })
+});
 export const updateProviderRequestStatusZodSchema = z.object({
     status: z.enum([ProviderStatus.APPROVED, ProviderStatus.REJECTED, ProviderStatus.PENDING], {
         invalid_type_error: "Status must be APPROVED, REJECTED, PENDING"
