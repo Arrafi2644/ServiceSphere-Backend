@@ -2,9 +2,10 @@ import httpStatus from 'http-status-codes';
 import AppError from "../../errorHelpers/appError";
 import { ICategory } from "../category/category.interface";
 import { Category } from "../category/category.model";
+import mongoose from 'mongoose';
 
 
-export const createCategoryService = async (payload: ICategory) => {
+ const createCategoryService = async (payload: ICategory) => {
     const existingCategory = await Category.findOne({ name: payload.name });
 
     if (existingCategory) {
@@ -14,7 +15,7 @@ export const createCategoryService = async (payload: ICategory) => {
     return await Category.create(payload);
 };
 
-export const updateCategoryService = async (id: string, payload: Partial<ICategory>) => {
+const updateCategoryService = async (id: string, payload: Partial<ICategory>) => {
     // Check if category exists
     const existingCategory = await Category.findById(id);
     if (!existingCategory) {
@@ -30,8 +31,38 @@ export const updateCategoryService = async (id: string, payload: Partial<ICatego
     return updatedCategory;
 };
 
+ const deleteCategoryService = async (id: string) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+        // Check existing category
+        const existingCategory = await Category.findById(id).session(session);
+        if (!existingCategory) {
+            throw new AppError(httpStatus.NOT_FOUND, "Category not found.");
+        }
+
+        // ❗ যদি এই category এর সাথে services সম্পর্কিত থাকে → delete
+        // await Service.deleteMany({ category: id }).session(session);
+
+        // Delete Category
+        await Category.findByIdAndDelete(id).session(session);
+
+        // Commit
+        await session.commitTransaction();
+        session.endSession();
+
+        return { message: "Category deleted successfully" };
+    } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        throw error;
+    }
+};
+
 
 export const CategoryServices = {
     createCategoryService,
-    updateCategoryService
+    updateCategoryService,
+    deleteCategoryService
 }

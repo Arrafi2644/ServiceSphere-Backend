@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.post('/', validateRequest(createCategoryZodSchema), checkAuth(Role.ADMIN), CategoryControllers.createCategory)
 router.patch('/:id', validateRequest(updateCategoryZodSchema), checkAuth(Role.ADMIN), CategoryControllers.updateCategory)
+router.delete('/:id', checkAuth(Role.ADMIN), CategoryControllers.deleteCategory)
 
 export const categoryRoutes = router;
 
