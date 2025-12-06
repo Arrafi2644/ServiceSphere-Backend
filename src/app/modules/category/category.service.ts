@@ -60,9 +60,15 @@ const updateCategoryService = async (id: string, payload: Partial<ICategory>) =>
     }
 };
 
+ const getAllCategoryService = async () => {
+    const categories = await Category.find();
+    return categories;
+};
+
 
 export const CategoryServices = {
     createCategoryService,
     updateCategoryService,
-    deleteCategoryService
+    deleteCategoryService,
+    getAllCategoryService
 }

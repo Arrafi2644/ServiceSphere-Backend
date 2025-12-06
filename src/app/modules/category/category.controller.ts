@@ -4,7 +4,7 @@ import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from '../../utils/sendResponse';
 import { CategoryServices } from './category.service';
 
- const createCategory = catchAsync(async (req: Request, res: Response) => {
+const createCategory = catchAsync(async (req: Request, res: Response) => {
     const category = await CategoryServices.createCategoryService(req.body);
 
     sendResponse(res, {
@@ -15,7 +15,7 @@ import { CategoryServices } from './category.service';
     });
 });
 
-export const updateCategory = catchAsync(async (req: Request, res: Response) => {
+const updateCategory = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     const payload = req.body;
 
@@ -29,7 +29,7 @@ export const updateCategory = catchAsync(async (req: Request, res: Response) => 
     });
 });
 
-export const deleteCategory = catchAsync(async (req: Request, res: Response) => {
+const deleteCategory = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const result = await CategoryServices.deleteCategoryService(id);
@@ -42,10 +42,23 @@ export const deleteCategory = catchAsync(async (req: Request, res: Response) => 
     });
 });
 
+const getAllCategories = catchAsync(async (req: Request, res: Response) => {
+
+    const result = await CategoryServices.getAllCategoryService();
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "All categories retrieved successfully",
+        data: result,
+    });
+});
+
 
 export const CategoryControllers = {
     createCategory,
     updateCategory,
-    deleteCategory
+    deleteCategory,
+    getAllCategories
 }
 
